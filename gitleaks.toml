@@ -1,0 +1,29 @@
+title = "Custom Gitleaks Config"
+
+[allowlist]
+description = "global allow lists"
+paths = [
+    '''gitleaks.toml''',
+]
+
+[[rules]]
+id = "wifi-password"
+description = "WiFi Password Pattern"
+regex = '''(?i)(?:password|passwd|pwd)\s*=\s*["']([^"']{8,})["']'''
+tags = ["wifi", "credentials"]
+severity = "HIGH"
+
+[[rules]]
+id = "aws-access-key-id"
+description = "AWS Access Key ID"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["aws", "credentials"]
+severity = "HIGH"
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key Pattern"
+regex = '''(?i)(?:api[_-]?key|apikey|token)[^a-zA-Z0-9]([a-zA-Z0-9]{16,})'''
+tags = ["api", "credentials"]
+severity = "HIGH"
+

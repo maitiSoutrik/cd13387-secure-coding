@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
+@app.route('/')
 def hello_world():
-    username = request.json.get('username')
-    password = request.json.get('password')
+    username = request.args.get('username')
+    password = request.args.get('password')
 
     if username and password:
         return jsonify({'message': f'Hello, {username}! You logged in successfully.'})

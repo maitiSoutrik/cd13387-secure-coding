@@ -25,10 +25,18 @@ void check_password() {
     // Remove trailing newline if it exists
     input[strcspn(input, "\n")] = 0;
 
-    // Vulnerable strcpy - no bounds checking
-    strcpy(buffer, input);
+    // Check for buffer overflow before copying
+    if (strlen(input) >= sizeof(buffer)) {
+        printf("Access denied.\n");
+        diagnostics_output(input, PASSWORD, NULL);
+        return;
+    }
 
-    // Comparison (not actually secure due to potential overflow)
+    // Safe to copy now
+    strncpy(buffer, input, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
+
+    // Comparison
     if (strcmp(buffer, PASSWORD) == 0) {
         printf("Access granted.\n");
     } else {

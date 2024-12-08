@@ -15,7 +15,7 @@ int main() {
 }
 
 void check_password() {
-    char buffer[20]; // Small buffer vulnerable to overflow
+    char buffer[20]; // Buffer size of 20 bytes
     char input[100]; // Large buffer to read input from stdin
 
     // Prompt user for password
@@ -25,8 +25,16 @@ void check_password() {
     // Remove trailing newline if it exists
     input[strcspn(input, "\n")] = 0;
 
-    // Vulnerable strcpy - no bounds checking
-    strcpy(buffer, input);
+    // Check for buffer overflow before copying
+    if (strlen(input) >= sizeof(buffer)) {
+        printf("Access denied.\n");
+        diagnostics_output(input, sizeof(buffer));
+        return;
+    }
+
+    // Safe to copy now
+    strncpy(buffer, input, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
 
     // Comparison
     if (strcmp(buffer, PASSWORD) == 0) {
@@ -34,21 +42,14 @@ void check_password() {
     } else {
         printf("Access denied.\n");
     }
-
-    // Simulate a crash by detecting an overflow
-    if (strlen(buffer) > sizeof(buffer)) {
-        diagnostics_output(input, sizeof(buffer));
-    }
 }
 
 // Diagnostic output on buffer overflow
 void diagnostics_output(const char *input, size_t buffersize) {
-    printf("\n*** Diagnostics Output ***\n");
+    printf("\n ***Diagnostics Output*** \n");
     printf("Crash occurred.\n");
     printf("Input password: %s\n", input);
-    printf("Size of input: %ld\n", strlen(input));
-    printf("Size of buffer: %ld\n", buffersize);
-
+    printf("Size of input: %zu\n", strlen(input));
+    printf("Size of buffer: %zu\n", buffersize);
     exit(1);
-
 }
